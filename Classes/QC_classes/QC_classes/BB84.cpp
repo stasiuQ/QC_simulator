@@ -6,7 +6,7 @@ BB84::BB84(int k_size) {
 	this->key_size = k_size;
 	this->temp_key = new bool[k_size];
 	this->base = new bool[k_size];
-	this->key = vector<bool>(this->temp_key);
+	this->key = vector<bool>(k_size);
 	this->crossed = new bool[k_size];
 }
 
@@ -17,15 +17,28 @@ BB84::~BB84 (){
 	delete[] this->crossed;
 }
 
-void BB84::load_key (string reservoir) { // wyjatki !!!!
-	fstream data;
-	data.open(reservoir, ios::in);
-	if (!data.is_open()) throw "Can't touch this, check " + reservoir;
+void BB84::load_key (fstream reservoir) { // wyjatki !!!!
+	if (!reservoir.is_open()) throw "Can't touch this, check reservoir";
 }
 
-void BB84::generate_basis(string reservoir) {
+void BB84::generate_basis(fstream reservoir) {
 
 }
+
+void BB84::read_quantum(quantum_channel * q_connection)
+{
+	if (this->key_size != q_connection->key_size) throw "Quantum connection failed!";
+	for (int i = 0; i < this->key_size; i++) {
+		if (this->base[i] == q_connection->state_base[i]) {    // the same base, so that a state is not changed
+			this->temp_key[i] = q_connection->state_key[i];
+		}
+		else {
+			this->temp_key[i] = randomize();   // different bases, the state collapses randomly
+		}
+	}
+}
+
+
 
 
 void compare(BB84* Alice, BB84* Bob) {
