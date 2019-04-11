@@ -18,6 +18,6 @@ public:
 	void generate_basis(fstream reservoir);
 	void read_quantum(quantum_channel* q_connection, fstream reservoir);
 	void spy_quantum(quantum_channel* q_connection, fstream reservoir);
-	void spy_classic(protocol* Alice, fstream reservoir);
+	void spy_classic(protocol* Alice);
 	friend void compare(BB84 *Alice, BB84* Bob);
 };

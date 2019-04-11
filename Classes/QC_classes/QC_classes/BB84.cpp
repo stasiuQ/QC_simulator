@@ -14,15 +14,26 @@ BB84::~BB84 (){
 	delete[] this->temp_key;
 	delete[] this->base;
 	this->key.~key;
-	delete[] this->crossed;
+	delete[] this->crossed; 
 }
 
 void BB84::load_key (fstream reservoir) { // wyjatki !!!!
 	if (!reservoir.is_open()) throw "Can't touch this, check reservoir";
+	for (int i = 0; i < this->key_size; i++) {
+		bool temp;
+		reservoir >> temp;
+		this->temp_key[i] = temp;
+		this->key.push_back(temp);
+	}
 }
 
 void BB84::generate_basis(fstream reservoir) {
-
+	if (!reservoir.is_open()) throw "Can't touch this, check reservoir";
+	for (int i = 0; i < this->key_size; i++) {
+		bool temp;
+		reservoir >> temp;
+		this->base[i] = temp;
+	}
 }
 
 void BB84::read_quantum(quantum_channel * q_connection, fstream reservoir)
@@ -33,7 +44,7 @@ void BB84::read_quantum(quantum_channel * q_connection, fstream reservoir)
 			this->temp_key[i] = q_connection->state_key[i];
 		}
 		else {
-			this->temp_key[i] ;   // different bases, the state collapses randomly
+			reservoir >> this->temp_key[i];   // different bases, the state collapses randomly
 		}
 	}
 	q_connection->~quantum_channel;
@@ -47,14 +58,14 @@ void BB84::spy_quantum(quantum_channel * q_connection, fstream reservoir)
 			this->temp_key[i] = q_connection->state_key[i];
 		}
 		else {
-			this->temp_key[i] = randomize();   // different bases, the state collapses randomly
+			reservoir >> this->temp_key[i];   // different bases, the state collapses randomly
 			q_connection->state_base[i] = this->base[i];
 			q_connection->state_key[i] = this->temp_key[i];
 		}
 	}
 }
 
-void BB84::spy_classic(protocol * Alice, fstream reservoir)
+void BB84::spy_classic(protocol * Alice)
 {
 	for (int i = 0; i < this->key_size; i++) {  // rewriting Alice's public crossed tab
 		this->crossed[i] = Alice->crossed[i];
