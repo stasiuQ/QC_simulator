@@ -25,7 +25,7 @@ void BB84::generate_basis(fstream reservoir) {
 
 }
 
-void BB84::read_quantum(quantum_channel * q_connection)
+void BB84::read_quantum(quantum_channel * q_connection, fstream reservoir)
 {
 	if (this->key_size != q_connection->key_size) throw "Quantum connection failed!";
 	for (int i = 0; i < this->key_size; i++) {
@@ -33,8 +33,40 @@ void BB84::read_quantum(quantum_channel * q_connection)
 			this->temp_key[i] = q_connection->state_key[i];
 		}
 		else {
-			this->temp_key[i] = randomize();   // different bases, the state collapses randomly
+			this->temp_key[i] ;   // different bases, the state collapses randomly
 		}
+	}
+	q_connection->~quantum_channel;
+}
+
+void BB84::spy_quantum(quantum_channel * q_connection, fstream reservoir)
+{
+	if (this->key_size != q_connection->key_size) throw "Spy failed";
+	for (int i = 0; i < this->key_size; i++) {
+		if (this->base[i] == q_connection->state_base[i]) {    // the same base, so that a state is not changed
+			this->temp_key[i] = q_connection->state_key[i];
+		}
+		else {
+			this->temp_key[i] = randomize();   // different bases, the state collapses randomly
+			q_connection->state_base[i] = this->base[i];
+			q_connection->state_key[i] = this->temp_key[i];
+		}
+	}
+}
+
+void BB84::spy_classic(protocol * Alice, fstream reservoir)
+{
+	for (int i = 0; i < this->key_size; i++) {  // rewriting Alice's public crossed tab
+		this->crossed[i] = Alice->crossed[i];
+	}
+	int i = 0;
+	int j = 0;
+	while (i < this->key_size) {
+		if (this->crossed[i] == 0) {
+			this->key.erase(this->key.begin() + i - j);
+			j++;
+		}
+		i++;
 	}
 }
 
@@ -42,24 +74,21 @@ void BB84::read_quantum(quantum_channel * q_connection)
 
 
 void compare(BB84* Alice, BB84* Bob) {
-	int i;
-	if (Alice->key_size > Bob->key_size) {
-		throw "Alice has bigger!!";
+	int i = 0;  // key iterator
+	int j = 0; // crossed iterator
+	if (Alice->key_size != Bob->key_size) {
+		throw "Different size of keys";
 		return;
 	}
-	while (i<size(Alice->key)) {
+	while (i < Alice->key.size()) {
 		if (Alice->base[i] != Bob->base[i]) {
-			Bob->crossed[i] = 0; // 0 means crossed out element of key
+			Bob->crossed[j] = 0; // 0 means crossed out element of key
 			Bob->key.erase(Bob->key.begin() + i);
 			Alice->key.erase(Alice->key.begin() + i);
 		}
 		else {
 			Bob->crossed[i] = 1; i++;
 		}
-	}
-	if (size(Bob->key) > size(Alice->key)) {
-		for (int j = i; j < Bob->key_size; j++) {
-			Bob->key.erase(Bob->key.begin() + j);
-		}
+		j++;
 	}
 }

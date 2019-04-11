@@ -153,11 +153,13 @@
   <ItemGroup>
     <ClCompile Include="BB84.cpp" />
     <ClCompile Include="channels.cpp" />
+    <ClCompile Include="functions.cpp" />
     <ClCompile Include="QC_classes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BB84.h" />
     <ClInclude Include="channels.h" />
+    <ClInclude Include="functions.h" />
     <ClInclude Include="protocol.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

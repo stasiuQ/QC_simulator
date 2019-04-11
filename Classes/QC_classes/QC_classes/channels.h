@@ -1,5 +1,6 @@
 #pragma once
 #include "protocol.h"
+#include "BB84.h"
 
 using namespace std;
 
