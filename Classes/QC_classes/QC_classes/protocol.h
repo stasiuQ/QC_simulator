@@ -1,10 +1,11 @@
 #pragma once
 
+#include "channels.h"
+
 #include <cstdlib>
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "channels.h"
 
 using namespace std;
 class protocol {

@@ -13,11 +13,10 @@ BB84::BB84(int k_size) {
 BB84::~BB84 (){
 	delete[] this->temp_key;
 	delete[] this->base;
-	this->key.~key;
 	delete[] this->crossed; 
 }
 
-void BB84::load_key (fstream reservoir) { // wyjatki !!!!
+void BB84::load_key (fstream& reservoir) { // wyjatki !!!!
 	if (!reservoir.is_open()) throw "Can't touch this, check reservoir";
 	for (int i = 0; i < this->key_size; i++) {
 		bool temp;
@@ -27,7 +26,7 @@ void BB84::load_key (fstream reservoir) { // wyjatki !!!!
 	}
 }
 
-void BB84::generate_basis(fstream reservoir) {
+void BB84::generate_basis(fstream& reservoir) {
 	if (!reservoir.is_open()) throw "Can't touch this, check reservoir";
 	for (int i = 0; i < this->key_size; i++) {
 		bool temp;
@@ -47,7 +46,7 @@ void BB84::read_quantum(quantum_channel * q_connection, fstream reservoir)
 			reservoir >> this->temp_key[i];   // different bases, the state collapses randomly
 		}
 	}
-	q_connection->~quantum_channel;
+	delete q_connection;
 }
 
 void BB84::spy_quantum(quantum_channel * q_connection, fstream reservoir)
@@ -91,7 +90,7 @@ void compare(BB84* Alice, BB84* Bob) {
 		throw "Different size of keys";
 		return;
 	}
-	while (i < Alice->key.size()) {
+	while (i < static_cast<int>(Alice->key.size())) {
 		if (Alice->base[i] != Bob->base[i]) {
 			Bob->crossed[j] = 0; // 0 means crossed out element of key
 			Bob->key.erase(Bob->key.begin() + i);

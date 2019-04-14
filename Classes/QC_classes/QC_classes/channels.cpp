@@ -21,7 +21,7 @@ quantum_channel::~quantum_channel()
 	delete[] this->state_base;
 }
 
-void quantum_channel::make_noise(fstream reservoir, int max_noise)
+void quantum_channel::make_noise(fstream& reservoir, int max_noise)
 {
 
 }
