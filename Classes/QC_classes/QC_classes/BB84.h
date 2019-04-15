@@ -14,10 +14,11 @@ public:
 	bool* crossed;
 	BB84(int k_size = 20);
 	~BB84();
-	void load_key(fstream reservoir);
-	void generate_basis(fstream reservoir);
-	void read_quantum(quantum_channel* q_connection, fstream reservoir);
-	void spy_quantum(quantum_channel* q_connection, fstream reservoir);
+	void load_key();
+	void generate_basis();
+	void read_quantum(quantum_channel* q_connection);
+	void spy_quantum(quantum_channel* q_connection);
 	void spy_classic(protocol* Alice);
 	friend void compare(BB84 *Alice, BB84* Bob);
+	friend class quantum_channel;
 };

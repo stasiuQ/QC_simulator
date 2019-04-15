@@ -16,26 +16,24 @@ BB84::~BB84 (){
 	delete[] this->crossed; 
 }
 
-void BB84::load_key (fstream& reservoir) { // wyjatki !!!!
-	if (!reservoir.is_open()) throw "Can't touch this, check reservoir";
+void BB84::load_key () { // wyjatki !!!!
 	for (int i = 0; i < this->key_size; i++) {
 		bool temp;
-		reservoir >> temp;
+		temp = buffer::randomize;
 		this->temp_key[i] = temp;
 		this->key.push_back(temp);
 	}
 }
 
-void BB84::generate_basis(fstream& reservoir) {
-	if (!reservoir.is_open()) throw "Can't touch this, check reservoir";
+void BB84::generate_basis() {
 	for (int i = 0; i < this->key_size; i++) {
 		bool temp;
-		reservoir >> temp;
+		temp = buffer::randomize;
 		this->base[i] = temp;
 	}
 }
 
-void BB84::read_quantum(quantum_channel * q_connection, fstream reservoir)
+void BB84::read_quantum(quantum_channel * q_connection)
 {
 	if (this->key_size != q_connection->key_size) throw "Quantum connection failed!";
 	for (int i = 0; i < this->key_size; i++) {
@@ -43,13 +41,13 @@ void BB84::read_quantum(quantum_channel * q_connection, fstream reservoir)
 			this->temp_key[i] = q_connection->state_key[i];
 		}
 		else {
-			reservoir >> this->temp_key[i];   // different bases, the state collapses randomly
+			this->temp_key[i] = buffer::randomize;   // different bases, the state collapses randomly
 		}
 	}
 	delete q_connection;
 }
 
-void BB84::spy_quantum(quantum_channel * q_connection, fstream reservoir)
+void BB84::spy_quantum(quantum_channel * q_connection)
 {
 	if (this->key_size != q_connection->key_size) throw "Spy failed";
 	for (int i = 0; i < this->key_size; i++) {
@@ -57,7 +55,7 @@ void BB84::spy_quantum(quantum_channel * q_connection, fstream reservoir)
 			this->temp_key[i] = q_connection->state_key[i];
 		}
 		else {
-			reservoir >> this->temp_key[i];   // different bases, the state collapses randomly
+			this->temp_key[i] = buffer::randomize;   // different bases, the state collapses randomly
 			q_connection->state_base[i] = this->base[i];
 			q_connection->state_key[i] = this->temp_key[i];
 		}

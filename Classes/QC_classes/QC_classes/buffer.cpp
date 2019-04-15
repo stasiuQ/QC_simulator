@@ -1,8 +1,10 @@
 #include "buffer.h"
 
+fstream buffer::data;
+
 void buffer::init(string file_name)
 {
-	data.open(file_name, ios::binary);
+	data.open(file_name, ios::in);
 	if (!data.is_open()) throw "The chamber has not been opened!";
 	if (data.eof()) throw "Empty file!";
 
