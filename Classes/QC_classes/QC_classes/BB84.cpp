@@ -19,7 +19,7 @@ BB84::~BB84 (){
 void BB84::load_key () { // wyjatki !!!!
 	for (int i = 0; i < this->key_size; i++) {
 		bool temp;
-		temp = buffer::randomize;
+		temp = buffer::randomize();
 		this->temp_key[i] = temp;
 		this->key.push_back(temp);
 	}
@@ -28,7 +28,7 @@ void BB84::load_key () { // wyjatki !!!!
 void BB84::generate_basis() {
 	for (int i = 0; i < this->key_size; i++) {
 		bool temp;
-		temp = buffer::randomize;
+		temp = buffer::randomize();
 		this->base[i] = temp;
 	}
 }
@@ -41,7 +41,7 @@ void BB84::read_quantum(quantum_channel * q_connection)
 			this->temp_key[i] = q_connection->state_key[i];
 		}
 		else {
-			this->temp_key[i] = buffer::randomize;   // different bases, the state collapses randomly
+			this->temp_key[i] = buffer::randomize();   // different bases, the state collapses randomly
 		}
 	}
 	delete q_connection;
@@ -55,7 +55,7 @@ void BB84::spy_quantum(quantum_channel * q_connection)
 			this->temp_key[i] = q_connection->state_key[i];
 		}
 		else {
-			this->temp_key[i] = buffer::randomize;   // different bases, the state collapses randomly
+			this->temp_key[i] = buffer::randomize();   // different bases, the state collapses randomly
 			q_connection->state_base[i] = this->base[i];
 			q_connection->state_key[i] = this->temp_key[i];
 		}
@@ -99,4 +99,22 @@ void compare(BB84* Alice, BB84* Bob) {
 		}
 		j++;
 	}
+}
+
+ostream & operator<<(ostream & out, const BB84 & a)
+{
+	out << "Original key: " << endl;
+	for (int i = 0; i < a.key_size; i++) {
+		out << a.temp_key[i] << " ";
+	}
+	out << endl << "Base: " << endl;
+	for (int i = 0; i < a.key_size; i++) {
+		out << a.base[i] << " ";
+	}
+	out << endl << "Actual key: " << endl;
+	for (int i = 0; i < a.key.size(); i++) {
+		out << a.key[i] << " ";
+	}
+	out << endl;
+	return out;
 }

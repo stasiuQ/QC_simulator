@@ -19,6 +19,7 @@ public:
 	void read_quantum(quantum_channel* q_connection);
 	void spy_quantum(quantum_channel* q_connection);
 	void spy_classic(protocol* Alice);
-	friend void compare(BB84 *Alice, BB84* Bob);
+	friend void compare(BB84* Alice, BB84* Bob);
+	friend ostream& operator << (ostream& out, const BB84 &a);
 	friend class quantum_channel;
 };
