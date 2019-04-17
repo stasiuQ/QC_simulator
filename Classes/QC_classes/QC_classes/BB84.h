@@ -23,3 +23,5 @@ public:
 	friend ostream& operator << (ostream& out, const BB84 &a);
 	friend class quantum_channel;
 };
+
+void compare(BB84* Alice, BB84* Bob);

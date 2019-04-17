@@ -16,14 +16,20 @@ int main()
 	Bob->load_key();
 	Bob->generate_basis();
 
-	cout << Alice;
-	cout << Bob;
+	cout << *dynamic_cast<BB84*>(Alice);
+	cout << *dynamic_cast<BB84*>(Bob);
 
 	quantum_channel connection(Alice, 20);
 
 	Bob->read_quantum(&connection);
-	compare(Alice, Bob);
+	compare(dynamic_cast<BB84*>(Alice), dynamic_cast<BB84*>(Bob));
+
+	cout << *dynamic_cast<BB84*>(Alice);
+	cout << *dynamic_cast<BB84*>(Bob);
 	
+	delete Alice;
+	delete Bob;
+
 	buffer::close();
 
 	return 0;

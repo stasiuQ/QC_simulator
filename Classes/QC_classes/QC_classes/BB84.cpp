@@ -6,7 +6,7 @@ BB84::BB84(int k_size) {
 	this->key_size = k_size;
 	this->temp_key = new bool[k_size];
 	this->base = new bool[k_size];
-	this->key = vector<bool>(k_size);
+	//this->key = vector<bool>(k_size);
 	this->crossed = new bool[k_size];
 }
 
@@ -44,7 +44,7 @@ void BB84::read_quantum(quantum_channel * q_connection)
 			this->temp_key[i] = buffer::randomize();   // different bases, the state collapses randomly
 		}
 	}
-	delete q_connection;
+	//delete q_connection;
 }
 
 void BB84::spy_quantum(quantum_channel * q_connection)
@@ -101,19 +101,19 @@ void compare(BB84* Alice, BB84* Bob) {
 	}
 }
 
-ostream & operator<<(ostream & out, const BB84 & a)
+ostream & operator<<(ostream & out, const BB84& a)
 {
 	out << "Original key: " << endl;
 	for (int i = 0; i < a.key_size; i++) {
-		out << a.temp_key[i] << " ";
+		out << static_cast<int>(a.temp_key[i]) << " ";
 	}
 	out << endl << "Base: " << endl;
 	for (int i = 0; i < a.key_size; i++) {
-		out << a.base[i] << " ";
+		out << static_cast<int>(a.base[i]) << " ";
 	}
 	out << endl << "Actual key: " << endl;
 	for (int i = 0; i < a.key.size(); i++) {
-		out << a.key[i] << " ";
+		out << static_cast<int>(a.key[i]) << " ";
 	}
 	out << endl;
 	return out;
