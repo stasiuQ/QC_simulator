@@ -4,16 +4,25 @@ using namespace std;
 
 BB84::BB84(int k_size) {
 	this->key_size = k_size;
-	this->temp_key = new bool[k_size];
-	this->base = new bool[k_size];
-	//this->key = vector<bool>(k_size);
-	this->crossed = new bool[k_size];
+	this->temp_key = vector<bool>(k_size);
+	this->base = vector<bool>(k_size);
+	this->key = vector<bool>(k_size);
+	this->crossed = vector<bool>(k_size);
 }
 
 BB84::~BB84 (){
-	delete[] this->temp_key;
-	delete[] this->base;
-	delete[] this->crossed; 
+}
+
+bool BB84::get_key(int iterator)
+{
+	if (iterator >= this->key_size) throw "Iterator out of range";
+	return this->temp_key[iterator];
+}
+
+bool BB84::get_basis(int iterator)
+{
+	if (iterator >= this->key_size) throw "Iterator out of range";
+	return this->base[iterator];
 }
 
 void BB84::load_key () { // wyjatki !!!!
@@ -21,7 +30,7 @@ void BB84::load_key () { // wyjatki !!!!
 		bool temp;
 		temp = buffer::randomize();
 		this->temp_key[i] = temp;
-		this->key.push_back(temp);
+		this->key[i] = temp;
 	}
 }
 
@@ -43,8 +52,8 @@ void BB84::read_quantum(quantum_channel * q_connection)
 		else {
 			this->temp_key[i] = buffer::randomize();   // different bases, the state collapses randomly
 		}
+		this->key[i] = this->temp_key[i];
 	}
-	//delete q_connection;
 }
 
 void BB84::spy_quantum(quantum_channel * q_connection)
@@ -59,6 +68,7 @@ void BB84::spy_quantum(quantum_channel * q_connection)
 			q_connection->state_base[i] = this->base[i];
 			q_connection->state_key[i] = this->temp_key[i];
 		}
+		this->key[i] = this->temp_key[i];
 	}
 }
 
@@ -67,37 +77,38 @@ void BB84::spy_classic(protocol * Alice)
 	for (int i = 0; i < this->key_size; i++) {  // rewriting Alice's public crossed tab
 		this->crossed[i] = Alice->crossed[i];
 	}
-	int i = 0;
-	int j = 0;
-	while (i < this->key_size) {
-		if (this->crossed[i] == 0) {
-			this->key.erase(this->key.begin() + i - j);
-			j++;
-		}
-		i++;
-	}
+	this->key_reduction();
 }
 
 
 
 
-void compare(BB84* Alice, BB84* Bob) {
-	int i = 0;  // key iterator
-	int j = 0; // crossed iterator
-	if (Alice->key_size != Bob->key_size) {
+void BB84::compare(protocol* Bob) {
+
+	if (this->key_size != Bob->key_size) {
 		throw "Different size of keys";
 		return;
 	}
-	while (i < static_cast<int>(Alice->key.size())) {
-		if (Alice->base[i] != Bob->base[i]) {
-			Bob->crossed[j] = 0; // 0 means crossed out element of key
-			Bob->key.erase(Bob->key.begin() + i);
-			Alice->key.erase(Alice->key.begin() + i);
+	for (int i = 0; i < this->key_size; i++) {
+		if (this->base[i] == Bob->get_basis(i)) {
+			this->crossed[i] = 0;
+			Bob->crossed[i] = 0;   // zero means no crossing out
 		}
 		else {
-			Bob->crossed[i] = 1; i++;
+			this->crossed[i] = 1;
+			Bob->crossed[i] = 1;   // one means crossed out
 		}
-		j++;
+	}
+}
+
+void BB84::key_reduction()
+{
+	int j = 0;   // actual key iterator
+	for (int i = 0; i < key_size; i++) {
+		if (crossed[i] == 1)
+			key.erase(key.begin() + j);
+		else
+			j++;
 	}
 }
 
@@ -115,6 +126,6 @@ ostream & operator<<(ostream & out, const BB84& a)
 	for (int i = 0; i < a.key.size(); i++) {
 		out << static_cast<int>(a.key[i]) << " ";
 	}
-	out << endl;
+	out << endl << endl << endl;
 	return out;
 }

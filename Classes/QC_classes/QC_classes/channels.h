@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include <vector>
 
 using namespace std;
 
@@ -10,11 +11,11 @@ class BB84;
 class quantum_channel {
 protected:
 	int key_size;
-	bool* state_key;
-	bool* state_base;
+	vector<bool> state_key;
+	vector<bool> state_base;
 
 public:
-	quantum_channel(protocol* person, int k_size);
+	quantum_channel(protocol* person);
 	~quantum_channel();
 	void make_noise(fstream& reservoir, int max_noise);
 

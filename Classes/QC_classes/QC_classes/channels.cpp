@@ -3,22 +3,15 @@
 
 using namespace std;
 
-quantum_channel::quantum_channel(protocol * person, int k_size)
+quantum_channel::quantum_channel(protocol * person)
 {
-	this->key_size = k_size;
-	this->state_key = new bool[k_size];
-	this->state_base = new bool[k_size];
-	for (int i = 0; i < k_size; i++) {
-		this->state_key[i] = person->temp_key[i];
-		this->state_base[i] = person->base[i];
-	}
-
+	this->key_size = person->key_size;
+	this->state_key = person->key;
+	this->state_base = person->base;
 }
 
 quantum_channel::~quantum_channel()
 {
-	delete[] this->state_key;
-	delete[] this->state_base;
 }
 
 void quantum_channel::make_noise(fstream& reservoir, int max_noise)
