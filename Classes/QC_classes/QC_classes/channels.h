@@ -17,7 +17,7 @@ protected:
 public:
 	quantum_channel(protocol* person);
 	~quantum_channel();
-	void make_noise(fstream& reservoir, int max_noise);
+	void make_noise(double max_noise);
 
 	friend class protocol;
 	friend class BB84;

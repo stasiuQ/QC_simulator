@@ -6,8 +6,9 @@ using namespace std;
 int main()
 {
 	buffer::init("random_data.txt");
-	
-	int size = 15;
+	srand(time(NULL));
+
+	int size = 100;
 	protocol* Alice = new BB84(size);
 	protocol* Bob = new BB84(size);
 	protocol* Eve = new BB84(size);
@@ -27,8 +28,10 @@ int main()
 	cout << "Eve" << endl << *dynamic_cast<BB84*>(Eve);
 
 	quantum_channel connection(Alice);
+	connection.make_noise(20);
 
 	Eve->spy_quantum(&connection);
+	connection.make_noise(20);
 	Bob->read_quantum(&connection);
 
 	Alice->compare(Bob);
