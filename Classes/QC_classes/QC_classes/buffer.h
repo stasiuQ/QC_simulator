@@ -8,8 +8,10 @@ using namespace std;
 class buffer {
 private:
 	static fstream data;
+	static fstream temp_file;
+	static const char file_name[];
 public:
-	static void init(string file_name);
+	static void init();
 	static bool randomize();
 	static void close();
 };
