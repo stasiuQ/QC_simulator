@@ -8,10 +8,14 @@
 #include <fstream>
 #include <vector>
 #include <ctime>
+#include <cmath>
 
+constexpr auto PI = 3.14159265358979323846;
 using namespace std;
 class protocol {
 protected:
+	bool is_BB84 = false;
+	bool is_B92 = false;
 	vector<bool> temp_key;  // original randomly generated key 
 	vector<bool> key;		// actual key
 	vector<bool> base;		// randomly generated basis

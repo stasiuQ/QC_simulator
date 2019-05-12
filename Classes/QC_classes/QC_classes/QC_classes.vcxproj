@@ -151,6 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="B92.cpp" />
     <ClCompile Include="BB84.cpp" />
     <ClCompile Include="buffer.cpp" />
     <ClCompile Include="channels.cpp" />
@@ -158,6 +159,7 @@
     <ClCompile Include="QC_classes.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="B92.h" />
     <ClInclude Include="BB84.h" />
     <ClInclude Include="buffer.h" />
     <ClInclude Include="channels.h" />

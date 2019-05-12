@@ -6,8 +6,17 @@ using namespace std;
 quantum_channel::quantum_channel(protocol * person)
 {
 	this->key_size = person->key_size;
-	this->state_key = person->key;
-	this->state_base = person->base;
+
+	if (person->is_BB84) {
+		this->state_key = person->key;
+		this->state_base = person->base;
+	}
+	else if (person->is_B92) {
+		this->state_base = person->key;
+		for (int i = 0; i < this->key_size; i++) {
+			this->state_key.push_back(0);
+		}
+	}
 }
 
 quantum_channel::~quantum_channel()

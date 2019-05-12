@@ -3,6 +3,7 @@
 using namespace std;
 
 BB84::BB84(int k_size) {
+	this->is_BB84 = true;
 	this->key_size = k_size;
 	this->temp_key = vector<bool>(k_size);
 	this->base = vector<bool>(k_size);

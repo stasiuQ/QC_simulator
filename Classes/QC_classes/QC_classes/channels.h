@@ -21,5 +21,6 @@ public:
 
 	friend class protocol;
 	friend class BB84;
+	friend class B92;
 
 };
