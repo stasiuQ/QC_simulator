@@ -5,7 +5,7 @@ fstream buffer::data;
 fstream buffer::temp_file;
 const char buffer::file_name[] = "random_data.txt";
 const int buffer::bit_size = 32;   // grid of 0-1 distrubtion , changable
-long buffer::max_rand = static_cast<long>(pow(2, (bit_size + 1)) - 1);
+long long buffer::max_rand = static_cast<long long>(pow(2, (bit_size + 1)) - 1);
 
 void buffer::init()
 {
