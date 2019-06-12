@@ -23,5 +23,6 @@ public:
 	void key_reduction();
 	friend ostream& operator << (ostream& out, const B92 &a);
 	friend class quantum_channel;
+	friend class statistics;
 };
 
