@@ -1,26 +1,29 @@
 #include "functions.h"
 
-void bin_search(vector<bool>& sender, vector<bool>& receiver,int size)
+void bin_search(vector<bool> &sender, vector<bool> &receiver,int begin_sen, int begin_rec,int size)
 {
-	if (size == 1)
+
+	if (size == 1 && sender[begin_sen]!=receiver[begin_rec])
 	{
-		receiver[0] = !receiver[0];
+		receiver[begin_rec] = sender[begin_sen];
 		return;
 	}
+	else if (size == 1)
+	{
+		return;
+	}
+	
+
 	bool par_rec = 0;
 	bool par_sen = 0;
-	for (int i = 0; i < size; i++) {
+	for (int i = begin_sen; i < begin_sen + size; i++) {
 		par_rec = (par_rec + receiver[i]) % 2;
 		par_sen = (par_sen + sender[i]) % 2;
 	}
 	if (par_rec != par_sen) {
 		int size_left = static_cast<int>(floor(size / 2));
 		int size_right = size - size_left;
-		vector<bool> left_sen(sender.begin(), sender.begin() + size_left);
-		vector<bool> left_rec(receiver.begin(), receiver.begin() + size_left);
-		vector<bool> right_sen(sender.begin()+size_left, sender.end());
-		vector<bool>  right_rec(receiver.begin()+size_left, receiver.end());
-		bin_search(left_sen, left_rec, size_left);
-		bin_search(right_sen, right_rec, size_right);
+		bin_search(sender, receiver,begin_sen,begin_rec,size_left);
+		bin_search(sender, receiver, begin_sen+size_left, begin_rec+size_left, size_right);
 	}
 }

@@ -7,5 +7,5 @@
 
 using namespace std;
 
-void bin_search(vector<bool> &sender, vector<bool> &receiver,int size); //recursive function which can negate last one
+void bin_search(vector<bool> &sender, vector<bool> &receiver, int begin_sen, int begin_rec, int size); //recursive function which can negate last one
 

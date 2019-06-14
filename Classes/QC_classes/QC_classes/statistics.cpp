@@ -75,13 +75,14 @@ void statistics::simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_
 		QBER_noise.push_back(Y);
 
 		// error estimation, reducing key lenght
-		connection.error_estimation(Alice, Bob, 50, 5);
+		connection.error_estimation(Alice, Bob, 50 );
 		vector<double> X;
 		X.push_back(noise_level);
 		X.push_back(connection.QBER_est);
 		QBER_estimation.push_back(X);
 
 		// starting error correction
+		long long perm = buffer::rand_int(5);
 		connection.Cascade(Alice, Bob, 1, 10);
 		vector<double> Z;
 		Z.push_back(noise_level);

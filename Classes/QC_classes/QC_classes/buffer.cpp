@@ -33,6 +33,17 @@ double buffer::rand_1()
 	return number;
 }
 
+long long buffer::rand_int(int bits_number)
+{
+	double number = 0;
+	for (int i = 0; i <= bits_number; i++) {
+		number += buffer::randomize()*pow(2, i);
+	}
+
+	number = number;
+	return number;
+}
+
 void buffer::close()
 {
 	temp_file.open("temp_data.txt", ios::out);

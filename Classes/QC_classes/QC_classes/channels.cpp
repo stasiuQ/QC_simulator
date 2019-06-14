@@ -42,9 +42,9 @@ void quantum_channel::make_noise(double max_noise)    // max_noise is a maximal 
 	}
 }
 
-void quantum_channel::error_estimation(protocol * sender, protocol * receiver,float comp_percent,int permutation_num) //we can estimate error level with accuracy modulated with the key percent to compare
+void quantum_channel::error_estimation(protocol * sender, protocol * receiver,float comp_percent) //we can estimate error level with accuracy modulated with the key percent to compare
 {
-	
+	long long permutation_num = buffer::rand_int(5);
 	int key_size_cut= static_cast<int>(sender->actual_key_size*comp_percent / 100);
 	vector<bool> send_per_key(sender->key.begin(), sender->key.end());
 	vector<bool> rec_per_key(receiver->key.begin(), receiver->key.end());
@@ -68,8 +68,8 @@ void quantum_channel::error_estimation(protocol * sender, protocol * receiver,fl
 	rec_per_key.erase(rec_per_key.begin(), rec_per_key.end() - key_size_cut);// to make them the same length
 	int errors=0;//we don't need to know their places yet
 	for (int i = 0; i < key_size_cut; i++){
-		send_cut_key[i] = (send_cut_key[i] + send_per_key[i])%2 ;
-		rec_cut_key[i] = (rec_cut_key[i] + rec_per_key[i])%2;
+		//send_cut_key[i] = (send_cut_key[i] + send_per_key[i])%2 ;
+		//rec_cut_key[i] = (rec_cut_key[i] + rec_per_key[i])%2;
 		if (send_cut_key[i] != rec_cut_key[i]) {
 			errors++;
 		}
@@ -79,16 +79,18 @@ void quantum_channel::error_estimation(protocol * sender, protocol * receiver,fl
 
 	sender->actual_key_size -= key_size_cut;
 	sender->key.erase(sender->key.end() - key_size_cut, sender->key.end());
-	sender->base.erase(sender->base.end() - key_size_cut, sender->base.end());
 
 	receiver->actual_key_size -= key_size_cut;
 	receiver->key.erase(receiver->key.end() - key_size_cut, receiver->key.end());//cuts off all sent components
-	receiver->base.erase(receiver->base.end() - key_size_cut, receiver->base.end());
 	
 }
 
 void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha,int steps)
 {
+	long long permutation_num = buffer::rand_int(5);
+	if (QBER_est == 0) {
+		return;
+	}
 	double QBER_esti = QBER_est;
 	vector<int> permutation;
 	for (int i = 0; i < sender->actual_key_size; i++) {
@@ -96,16 +98,20 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 	}
 	for (int j = 0; j < steps; j++)
 	{
-		int r1 = static_cast<int>(alpha / QBER_est);//block length
+
+		int r1 = static_cast<int>(alpha / QBER_esti);//block length
+		if (r1 > sender->actual_key_size) {
+			return;
+		}
 		if (r1 > sender->actual_key_size) return;
 		while (sender->actual_key_size%r1 != 0) {//to make key able to be divide
 			sender->actual_key_size -=1;
 			sender->key.pop_back();
-			sender->base.pop_back();
+
 
 			receiver->actual_key_size -= 1;
 			receiver->key.pop_back();
-			receiver->base.pop_back();
+
 
 			permutation.pop_back();
 		}
@@ -113,7 +119,7 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 
 
 		// don't know if I shall remove that
-		for (int i = 0; i < j; i++) {
+		for (int i = 0; i < permutation_num; i++) {
 			next_permutation(permutation.begin(), permutation.end());
 		}// we can permutate however we want, but this is our model
 		vector<bool> temp1= sender->key;
@@ -162,11 +168,10 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 		}
 
 		for (int i = 0; i < temp; i++) {
-			vector<bool> temp_send(sender->key.begin() + i * r1, sender->key.begin() + (i + 1)*r1);
-			vector<bool> temp_rec(receiver->key.begin() + i * r1, receiver->key.begin() + (i + 1)*r1);
 			if (par_check[i] == 1) {
-				bin_search(temp_send, temp_rec, r1);//negate which gives error
+				bin_search(sender->key, receiver->key, i*r1,i*r1,r1);//negate which gives error
 			}
+
 		}
 		QBER_esti = QBER_esti / 2;// We don't look upon if there's another error near the one taken before, go to another step then
 	}
@@ -180,32 +185,32 @@ void quantum_channel::privacy_amp(protocol * sender, protocol * receiver, int tr
 	{
 
 		sender->actual_key_size -=1;
-		sender->key.erase(sender->key.end());
-		sender->base.erase(sender->base.end());
+		sender->key.pop_back();
+
 
 		receiver->actual_key_size -= 1;
-		receiver->key.erase(receiver->key.end());
-		receiver->base.erase(receiver->base.end());
+		receiver->key.pop_back();
+		
 	}
 	
 
-	vector< vector<bool>> matrix;
+	vector< vector<bool>> matrix(sender->actual_key_size / 3,vector<bool>(sender->actual_key_size / 3));
 	for (int col = 0; col < sender->actual_key_size / 3; col++) {
-		matrix[1][col] = temp[col];
+		matrix[0][col] = temp[col];
 	}
 
 	for (int row = 1; row < sender->actual_key_size / 3;row++) {
 		matrix[row].push_back(temp[sender->actual_key_size/ 3-1+row]);
 	}
-	vector<bool> raw_sen;
-	vector<bool> raw_rec;
+	vector<bool> raw_sen(sender->actual_key_size / 3);
+	vector<bool> raw_rec(sender->actual_key_size / 3);
 	for (int i = 0; i < sender->actual_key_size / 3; i++) {
 		raw_sen[i] = 0;
 		raw_rec[i] = 0;
-		for (int j = 0; j < sender->actual_key_size; j++)
+		for (int j = 0; j < sender->actual_key_size/3; j++)
 		{
-			raw_sen[i] = raw_sen[i] + matrix[i][j] * temp[j];
-			raw_rec[i] = raw_rec[i] + matrix[i][j] * temp[j];
+			raw_sen[i] = raw_sen[i] + matrix[i][j] * raw_sen[j];
+			raw_rec[i] = raw_rec[i] + matrix[i][j] * raw_rec[j];
 		}
 	}
 	receiver->key = raw_rec;

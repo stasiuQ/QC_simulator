@@ -16,5 +16,6 @@ public:
 	static void init();
 	static bool randomize();
 	static double rand_1();
+	static long long rand_int(int bits_number);
 	static void close();
 };
