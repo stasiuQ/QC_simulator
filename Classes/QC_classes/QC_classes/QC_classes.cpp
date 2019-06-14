@@ -1,5 +1,6 @@
 ﻿#include "protocol.h"
 #include "BB84.h"
+#include "B92.h"
 
 using namespace std;
 
@@ -9,8 +10,8 @@ int main()
 	srand(time(NULL));
 
 	int size = 100;
-	protocol* Alice = new BB84(size);
-	protocol* Bob = new BB84(size);
+	protocol* Alice = new B92(size,45);
+	protocol* Bob = new B92(size,45);
 	//protocol* Eve = new BB84(size);
 
 
