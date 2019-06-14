@@ -46,33 +46,35 @@ void quantum_channel::error_estimation(protocol * sender, protocol * receiver,fl
 {
 	
 	int key_size_cut= static_cast<int>(sender->actual_key_size*comp_percent / 100);
-	vector<bool> send_per_key(sender->key.end() - key_size_cut, sender->key.end());
-	vector<bool> rec_per_key(receiver->key.end() - key_size_cut, receiver->key.end());
+	vector<bool> send_per_key(sender->key.begin(), sender->key.end());
+	vector<bool> rec_per_key(receiver->key.begin(), receiver->key.end());
 	vector<bool> send_cut_key(sender->key.end() - key_size_cut, sender->key.end());
 	vector<bool> rec_cut_key(receiver->key.end() - key_size_cut, receiver->key.end());
 	vector<int> permutation;
-	for (int i = 0; i < key_size_cut; i++) {
+	for (int i = 0; i <sender->actual_key_size; i++) {
 		permutation.push_back(i);
 	}
 	for (int i = 0; i < permutation_num; i++) {
 		next_permutation(permutation.begin(), permutation.end());
 	}// we can choose which permutation we want exactly as it is transported through classical channel
 
-	for (int i = 0; i < key_size_cut; i++){//permutation is for homogeneous distribution
-		send_per_key[i] = send_cut_key[permutation[i]];
-		rec_per_key[i] = rec_cut_key[permutation[i]];
+	for (int i = 0; i <sender->actual_key_size; i++){//permutation is for homogeneous distribution
+		send_per_key[i] = sender->key[permutation[i]];
+		rec_per_key[i] = receiver->key[permutation[i]];
 	}
-	//Now we must cut take xor of both, we'll do it on cut keys, so we don't create now memory reservations
 
+	//Now we must cut take xor of both, we'll do it on cut keys, so we don't create now memory reservations
+	send_per_key.erase(send_per_key.begin(), send_per_key.end() - key_size_cut);
+	rec_per_key.erase(rec_per_key.begin(), rec_per_key.end() - key_size_cut);// to make them the same length
 	int errors=0;//we don't need to know their places yet
 	for (int i = 0; i < key_size_cut; i++){
-		send_cut_key[i] = (send_cut_key[i] + send_per_key[i]) % 2;
-		rec_cut_key[i] = (rec_cut_key[i] + rec_per_key[i]) % 2;
+		send_cut_key[i] = (send_cut_key[i] + send_per_key[i])%2 ;
+		rec_cut_key[i] = (rec_cut_key[i] + rec_per_key[i])%2;
 		if (send_cut_key[i] != rec_cut_key[i]) {
 			errors++;
 		}
 	}
-	this->QBER_est = static_cast<double>(errors)/(key_size_cut);
+	this->QBER_est = static_cast<double>(errors)/(static_cast<double>(key_size_cut));
 	//I don't know about state key and base, shall we remove it as well?
 
 	sender->actual_key_size -= key_size_cut;
@@ -87,6 +89,7 @@ void quantum_channel::error_estimation(protocol * sender, protocol * receiver,fl
 
 void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha,int steps)
 {
+	double QBER_esti = QBER_est;
 	vector<int> permutation;
 	for (int i = 0; i < sender->actual_key_size; i++) {
 		permutation.push_back(i);
@@ -97,12 +100,14 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 		if (r1 > sender->actual_key_size) return;
 		while (sender->actual_key_size%r1 != 0) {//to make key able to be divide
 			sender->actual_key_size -=1;
-			sender->key.erase(sender->key.end());
-			sender->base.erase(sender->base.end());
+			sender->key.pop_back();
+			sender->base.pop_back();
 
 			receiver->actual_key_size -= 1;
-			receiver->key.erase(receiver->key.end());
-			receiver->base.erase(receiver->base.end());
+			receiver->key.pop_back();
+			receiver->base.pop_back();
+
+			permutation.pop_back();
 		}
 			//I don't know about state key and base, shall we remove it as well?
 
@@ -111,8 +116,8 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 		for (int i = 0; i < j; i++) {
 			next_permutation(permutation.begin(), permutation.end());
 		}// we can permutate however we want, but this is our model
-		vector<bool> temp1;
-		vector<bool> temp2;
+		vector<bool> temp1= sender->key;
+		vector<bool> temp2= receiver->key;// asign only at the beginning
 		for (int i = 0; i < sender->actual_key_size; i++)
 		{
 
@@ -125,21 +130,12 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 		receiver->key = temp2;
 		//state key?????
 
-
 		vector<bool> par_check;
 		bool par_sen = 0;
 		bool par_rec = 0;
 		int temp = 0;
 		for (int i = 0; i < sender->actual_key_size; i++) {
-			if (i%r1 == r1 - 1)
-			{
-				par_check[i] = ((par_sen + par_rec) % 2); //if it's ok it gives us 0, otherwise 1
 
-				temp++;
-				par_sen = 0;
-				par_rec = 0;
-
-			}
 			if (receiver->key[i] == true)
 			{
 				par_rec = (par_rec + 1) % 2;
@@ -148,16 +144,31 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 			{
 				par_sen = (par_sen + 1) % 2;
 			}
+
+			if (i%r1 == r1 - 1)//end of block
+			{
+				if (par_rec != par_sen) {
+					par_check.insert(par_check.end(),1); //if it's ok it gives us 0, otherwise 1
+				}
+				else {
+					par_check.insert(par_check.end(), 0);
+				}
+
+				temp++;
+				par_sen = 0;
+				par_rec = 0;
+			}
+
 		}
 
 		for (int i = 0; i < temp; i++) {
-			vector<bool> temp_send(sender->key.begin() + i * r1, sender->key.begin() + (i + 1)*r1-1);
-			vector<bool> temp_rec(receiver->key.begin() + i * r1, receiver->key.begin() + (i + 1)*r1-1);
+			vector<bool> temp_send(sender->key.begin() + i * r1, sender->key.begin() + (i + 1)*r1);
+			vector<bool> temp_rec(receiver->key.begin() + i * r1, receiver->key.begin() + (i + 1)*r1);
 			if (par_check[i] == 1) {
 				bin_search(temp_send, temp_rec, r1);//negate which gives error
 			}
 		}
-		QBER_est = QBER_est / 2;// We don't look upon if there's another error near the one taken before, go to another step then
+		QBER_esti = QBER_esti / 2;// We don't look upon if there's another error near the one taken before, go to another step then
 	}
 }
 
