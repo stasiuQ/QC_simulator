@@ -7,7 +7,6 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include <ctime>
 #include <cmath>
 #include <algorithm>
 
@@ -36,5 +35,5 @@ public:
 	//virtual bool error_correction(int type) = 0;  // freind with benefits???
 	//virtual bool privacy_amp(int type) = 0; // freind with benefits???
 	friend class quantum_channel;
-
+	friend class statistics;
 };

@@ -30,7 +30,7 @@ void quantum_channel::make_noise(double max_noise)    // max_noise is a maximal 
 	unsigned int rand_iterator;
 	bool temp;
 	for (int i = 0; i < static_cast<int>(max_noise*key_size/100); i++) {
-		rand_iterator = static_cast<unsigned int>((static_cast<double>(rand())/ RAND_MAX)*(key_size+1));
+		rand_iterator = static_cast<unsigned int>(buffer::rand_1()*(key_size));
 		if (rand_iterator == key_size)
 			rand_iterator--;
 		temp = buffer::randomize();

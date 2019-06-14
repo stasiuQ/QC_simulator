@@ -77,8 +77,10 @@ void B92::read_quantum(quantum_channel * q_connection)
 				}
 			}
 		}
-		if (this->key[i] == 1)
+		if (this->key[i] == 1) {
 			this->crossed[i] = 0;  // no crossing
+			this->key[i] = !this->base[i];
+		}
 		else
 			this->crossed[i] = 1;  // crossing out
 	}

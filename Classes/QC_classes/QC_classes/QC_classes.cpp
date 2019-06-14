@@ -7,16 +7,17 @@ using namespace std;
 int main()
 {
 	buffer::init();
-	srand(time(NULL));
 
-	int size = 100;
-	protocol* Alice = new B92(size,45);
-	protocol* Bob = new B92(size,45);
-	//protocol* Eve = new BB84(size);
+	
+	int size = 40;
+	double angle = 30;
+	protocol* Alice = new B92(size, angle);
+	protocol* Bob = new B92(size, angle);
+	//protocol* Eve = new B92(size, angle);
 
 
 	Alice->load_key();
-	Alice->generate_basis();
+	//Alice->generate_basis();
 
 	Bob->load_key();
 	Bob->generate_basis();
@@ -24,9 +25,9 @@ int main()
 	//Eve->load_key();
 	//Eve->generate_basis();
 
-	cout << "Alice" << endl << *dynamic_cast<BB84*>(Alice);
-	cout << "Bob" << endl << *dynamic_cast<BB84*>(Bob);
-	//cout << "Eve" << endl << *dynamic_cast<BB84*>(Eve);
+	cout << "Alice" << endl << *dynamic_cast<B92*>(Alice);
+	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
+	//cout << "Eve" << endl << *dynamic_cast<B92*>(Eve);
 
 	quantum_channel connection(Alice);
 	connection.make_noise(20);
@@ -40,9 +41,9 @@ int main()
 	Alice->key_reduction();
 	Bob->key_reduction();
 
-	cout << "Alice" << endl << *dynamic_cast<BB84*>(Alice);
-	cout << "Bob" << endl << *dynamic_cast<BB84*>(Bob);
-	//cout << "Eve" << endl << *dynamic_cast<BB84*>(Eve);
+	cout << "Alice" << endl << *dynamic_cast<B92*>(Alice);
+	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
+	//cout << "Eve" << endl << *dynamic_cast<B92*>(Eve);
 	
 	delete Alice;
 	delete Bob;

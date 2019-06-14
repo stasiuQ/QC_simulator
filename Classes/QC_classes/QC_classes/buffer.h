@@ -11,7 +11,7 @@ private:
 	static fstream temp_file;
 	static const char file_name[];
 	static const int bit_size;
-	static long max_rand;
+	static long long max_rand;
 public:
 	static void init();
 	static bool randomize();

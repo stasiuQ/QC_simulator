@@ -157,6 +157,7 @@
     <ClCompile Include="channels.cpp" />
     <ClCompile Include="functions.cpp" />
     <ClCompile Include="QC_classes.cpp" />
+    <ClCompile Include="statistics.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="B92.h" />
@@ -164,6 +165,7 @@
     <ClInclude Include="buffer.h" />
     <ClInclude Include="channels.h" />
     <ClInclude Include="functions.h" />
+    <ClInclude Include="statistics.h" />
     <ClInclude Include="protocol.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
