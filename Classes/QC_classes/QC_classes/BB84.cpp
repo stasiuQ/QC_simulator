@@ -5,6 +5,7 @@ using namespace std;
 BB84::BB84(int k_size) {
 	this->is_BB84 = true;
 	this->key_size = k_size;
+	this->actual_key_size = k_size;
 	this->temp_key = vector<bool>(k_size);
 	this->base = vector<bool>(k_size);
 	this->key = vector<bool>(k_size);
@@ -111,6 +112,7 @@ void BB84::key_reduction()
 		else
 			j++;
 	}
+	this->actual_key_size = key.size();
 }
 
 ostream & operator<<(ostream & out, const BB84& a)

@@ -30,7 +30,7 @@ int main()
 	//cout << "Eve" << endl << *dynamic_cast<B92*>(Eve);
 
 	quantum_channel connection(Alice);
-	connection.make_noise(20);
+	connection.make_noise(40);
 
 	//Eve->spy_quantum(&connection);
 	Bob->read_quantum(&connection);
@@ -44,6 +44,17 @@ int main()
 	cout << "Alice" << endl << *dynamic_cast<B92*>(Alice);
 	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
 	//cout << "Eve" << endl << *dynamic_cast<B92*>(Eve);
+
+	connection.error_estimation(Alice, Bob, 50, 10);
+	connection.Cascade(Alice, Bob, 1, 10);
+
+	cout << "Alice" << endl << *dynamic_cast<B92*>(Alice);
+	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
+
+	connection.privacy_amp(Alice, Bob, 10);
+
+	cout << "Alice" << endl << *dynamic_cast<B92*>(Alice);
+	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
 	
 	delete Alice;
 	delete Bob;

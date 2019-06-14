@@ -4,6 +4,7 @@ B92::B92(int k_size, double angle)  // "angle" argument given in degrees
 {
 	this->is_B92 = true;
 	this->key_size = k_size;
+	this->actual_key_size = k_size;
 	this->temp_key = vector<bool>(k_size);
 	this->base = vector<bool>(k_size);
 	this->key = vector<bool>(k_size);
@@ -144,6 +145,7 @@ void B92::key_reduction()
 		else
 			j++;
 	}
+	this->actual_key_size = key.size();
 }
 
 ostream & operator<<(ostream & out, const B92 & a)

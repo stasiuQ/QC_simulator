@@ -4,7 +4,7 @@ void bin_search(vector<bool>& sender, vector<bool>& receiver,int size)
 {
 	if (size == 1)
 	{
-		!receiver[0];
+		receiver[0] = !receiver[0];
 		return;
 	}
 	bool par_rec = 0;

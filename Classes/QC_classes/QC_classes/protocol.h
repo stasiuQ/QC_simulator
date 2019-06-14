@@ -19,6 +19,7 @@ protected:
 	vector<bool> temp_key;  // original randomly generated key 
 	vector<bool> key;		// actual key
 	vector<bool> base;		// randomly generated basis
+	int actual_key_size;    // actual, operative key size
 	
 public:
 	int key_size;
