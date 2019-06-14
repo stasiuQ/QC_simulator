@@ -8,6 +8,7 @@
 #include <fstream>
 #include <vector>
 #include <cmath>
+#include <algorithm>
 
 constexpr auto PI = 3.14159265358979323846;
 using namespace std;
