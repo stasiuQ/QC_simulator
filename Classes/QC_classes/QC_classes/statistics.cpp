@@ -26,19 +26,34 @@ void statistics::simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_
 	int no_steps = static_cast<int>((max_noise - min_noise) / step_noise);
 	
 	int size = Alice->key_size;
-	bool B92 = Alice->is_B92;
+	bool is_B92 = Alice->is_B92;
 	double angle = 0;
-	if (B92)
+	if (is_B92) {
+		angle = dynamic_cast<B92*>(Alice)->alpha;
+	}
 	
 	vector< vector<double> > QBER_noise;
+	vector< vector<double> > QBER_estimation;
+	vector< vector<double> > QBER_correction;
+
+
 	for (int i = 0; i < no_steps; i++) {
 		delete Alice;
 		delete Bob;
 
-		if (B)
+		if (is_B92) {
+			Alice = new B92(size, angle);
+			Bob = new B92(size, angle);
+		}
+		else {
+			Alice = new BB84(size);
+			Bob = new BB84(size);
+		}
 		
+		//****Communication*****//
 		Alice->load_key();
-		Alice->generate_basis();
+		if(!is_B92)
+			Alice->generate_basis();
 
 		Bob->load_key();
 		Bob->generate_basis();
@@ -51,14 +66,33 @@ void statistics::simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_
 
 		Alice->key_reduction();
 		Bob->key_reduction();
-		
-		vector<double> Y;
-		Y.push_back(this->QBER(Alice, Bob));
+
+		//**** End of communication ****//
+
+		vector<double> Y;  // filling real QBER before correction
 		Y.push_back(noise_level);
+		Y.push_back(this->QBER(Alice, Bob));
 		QBER_noise.push_back(Y);
+
+		// error estimation, reducing key lenght
+		connection.error_estimation(Alice, Bob, 50, 5);
+		vector<double> X;
+		X.push_back(noise_level);
+		X.push_back(connection.QBER_est);
+		QBER_estimation.push_back(X);
+
+		// starting error correction
+		connection.Cascade(Alice, Bob, 1, 10);
+		vector<double> Z;
+		Z.push_back(noise_level);
+		Z.push_back(this->QBER(Alice, Bob));
+		QBER_correction.push_back(Z);
+
 		noise_level += no_steps;
 	}
 	this->QBER_vs_noise = QBER_noise;
+	this->QBER_estimation_vs_noise = QBER_estimation;
+	this->QBER_correction_vs_noise = QBER_correction;
 }
 
 vector<double> statistics::simulate_QBER_angle(protocol * Alice, protocol * person, double min_angle, double max_angle, double step_angle)

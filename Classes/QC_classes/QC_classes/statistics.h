@@ -1,12 +1,16 @@
 #pragma once
 #include "protocol.h"
+#include "BB84.h"
+#include "B92.h"
 
 using namespace std;
 
 class statistics {
 protected:
 	vector< vector<double> > QBER_vs_noise;
-	vector<double> QBER_correction;
+	vector< vector<double> > QBER_estimation_vs_noise;
+	vector< vector<double> > QBER_correction_vs_noise;    // QBER vs noise after correction
+
 	int initial_key_size;
 	int key_lenght;
 	int key_lenght_correction;

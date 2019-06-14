@@ -11,11 +11,12 @@ class BB84;
 class quantum_channel {
 protected:
 	int key_size;
-	int QBER_est;
 	vector<bool> state_key;
 	vector<bool> state_base;
 
 public:
+	double QBER_est;
+
 	quantum_channel(protocol* person);
 	~quantum_channel();
 	void make_noise(double max_noise);
