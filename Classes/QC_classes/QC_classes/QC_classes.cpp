@@ -9,7 +9,7 @@ int main()
 	buffer::init();
 
 	
-	int size = 40;
+	int size = 450;
 	double angle = 30;
 	protocol* Alice = new B92(size, angle);
 	protocol* Bob = new B92(size, angle);
@@ -30,7 +30,7 @@ int main()
 	//cout << "Eve" << endl << *dynamic_cast<B92*>(Eve);
 
 	quantum_channel connection(Alice);
-	connection.make_noise(40);
+	connection.make_noise(50);
 
 	//Eve->spy_quantum(&connection);
 	Bob->read_quantum(&connection);
@@ -45,17 +45,24 @@ int main()
 	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
 	//cout << "Eve" << endl << *dynamic_cast<B92*>(Eve);
 
-	connection.error_estimation(Alice, Bob, 50, 10);
-	connection.Cascade(Alice, Bob, 1, 10);
-
+	
+	connection.error_estimation(Alice, Bob, 70);
+	
 	cout << "Alice" << endl << *dynamic_cast<B92*>(Alice);
 	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
 
-	connection.privacy_amp(Alice, Bob, 10);
+  	connection.Cascade(Alice, Bob,0.5, 5);
+
+  	cout << "Alice" << endl << *dynamic_cast<B92*>(Alice);
+	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
+
+	connection.privacy_amp(Alice, Bob, 20);
 
 	cout << "Alice" << endl << *dynamic_cast<B92*>(Alice);
 	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
 	
+	
+
 	delete Alice;
 	delete Bob;
 	//delete Eve;

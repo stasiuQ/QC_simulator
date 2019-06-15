@@ -83,7 +83,7 @@ void statistics::simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_
 
 		// starting error correction
 		long long perm = buffer::rand_int(5);
-		connection.Cascade(Alice, Bob, 1, 10);
+		connection.Cascade(Alice, Bob, 0.73, 10);
 		vector<double> Z;
 		Z.push_back(noise_level);
 		Z.push_back(this->QBER(Alice, Bob));

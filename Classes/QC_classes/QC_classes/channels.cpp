@@ -44,7 +44,7 @@ void quantum_channel::make_noise(double max_noise)    // max_noise is a maximal 
 
 void quantum_channel::error_estimation(protocol * sender, protocol * receiver,float comp_percent) //we can estimate error level with accuracy modulated with the key percent to compare
 {
-	long long permutation_num = buffer::rand_int(5);
+	long long permutation_num = buffer::rand_int(8);
 	int key_size_cut= static_cast<int>(sender->actual_key_size*comp_percent / 100);
 	vector<bool> send_per_key(sender->key.begin(), sender->key.end());
 	vector<bool> rec_per_key(receiver->key.begin(), receiver->key.end());
@@ -90,7 +90,7 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 
 	for (int j = 0; j < steps; j++)
 	{
-		long long permutation_num = buffer::rand_int(5);
+		long long permutation_num = buffer::rand_int(8);
 		if (QBER_est == 0) {
 			return;
 		}
@@ -169,7 +169,15 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 
 		for (int i = 0; i < temp; i++) {
 			if (par_check[i] == 1) {
-				bin_search(sender->key, receiver->key, i*r1,i*r1,r1);//negate which gives error
+				bool is_changed = 0;
+				vector<bool> changed(sender->actual_key_size);
+				bin_search(sender->key, receiver->key, i*r1,i*r1,r1,changed,is_changed);//negate which gives error
+				vector<bool> temp_changed(changed.begin(), changed.end());;
+				for (int j = 0; j < sender->actual_key_size; j++)
+				{
+					temp_changed[i] = changed[permutation[j]];
+				}
+				changed = temp_changed;//permutate changed table
 			}
 
 		}

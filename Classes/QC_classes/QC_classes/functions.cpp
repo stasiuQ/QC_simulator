@@ -1,12 +1,15 @@
 #include "functions.h"
 
-void bin_search(vector<bool> &sender, vector<bool> &receiver,int begin_sen, int begin_rec,int size)
+void bin_search(vector<bool> &sender, vector<bool> &receiver,int begin_sen, int begin_rec,int size,vector<bool> &changed,bool & is_changed)
 {
-
+	if (is_changed == 1)return;
 	if (size == 1 && sender[begin_sen]!=receiver[begin_rec])
 	{
-		receiver[begin_rec] = sender[begin_sen];
+		receiver[begin_rec] = (receiver[begin_rec]+1)%2;
+		changed[begin_sen] = 1;
+		//is_changed = 1;
 		return;
+		
 	}
 	else if (size == 1)
 	{
@@ -23,7 +26,7 @@ void bin_search(vector<bool> &sender, vector<bool> &receiver,int begin_sen, int 
 	if (par_rec != par_sen) {
 		int size_left = static_cast<int>(floor(size / 2));
 		int size_right = size - size_left;
-		bin_search(sender, receiver,begin_sen,begin_rec,size_left);
-		bin_search(sender, receiver, begin_sen+size_left, begin_rec+size_left, size_right);
+		bin_search(sender, receiver,begin_sen,begin_rec,size_left,changed,is_changed);
+		bin_search(sender, receiver, begin_sen+size_left, begin_rec+size_left, size_right,changed,is_changed);
 	}
 }
