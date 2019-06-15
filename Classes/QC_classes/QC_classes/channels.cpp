@@ -87,23 +87,23 @@ void quantum_channel::error_estimation(protocol * sender, protocol * receiver,fl
 
 void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha,int steps)
 {
-	long long permutation_num = buffer::rand_int(5);
-	if (QBER_est == 0) {
-		return;
-	}
-	double QBER_esti = QBER_est;
-	vector<int> permutation;
-	for (int i = 0; i < sender->actual_key_size; i++) {
-		permutation.push_back(i);
-	}
+
 	for (int j = 0; j < steps; j++)
 	{
-
-		int r1 = static_cast<int>(alpha / QBER_esti);//block length
-		if (r1 > sender->actual_key_size) {
+		long long permutation_num = buffer::rand_int(5);
+		if (QBER_est == 0) {
 			return;
 		}
-		if (r1 > sender->actual_key_size) return;
+		double QBER_esti = QBER_est;
+		vector<int> permutation;
+		for (int i = 0; i < sender->actual_key_size; i++) {
+			permutation.push_back(i);
+		}
+
+		int r1 = static_cast<int>(alpha / QBER_esti);//block length
+		if (r1 >= sender->actual_key_size || sender->actual_key_size<10) {
+			return;
+		}
 		while (sender->actual_key_size%r1 != 0) {//to make key able to be divide
 			sender->actual_key_size -=1;
 			sender->key.pop_back();
@@ -179,7 +179,7 @@ void quantum_channel::Cascade(protocol * sender, protocol * receiver,float alpha
 
 void quantum_channel::privacy_amp(protocol * sender, protocol * receiver, int treshhold)
 {
-	vector<bool> temp(sender->key.begin() + static_cast<int>(sender->actual_key_size / 3), sender->key.end());
+	
 	//easy to do, Toeplitz matrices
 	while (sender->actual_key_size % 3 != 0)
 	{
@@ -192,7 +192,7 @@ void quantum_channel::privacy_amp(protocol * sender, protocol * receiver, int tr
 		receiver->key.pop_back();
 		
 	}
-	
+	vector<bool> temp(sender->key.begin() + static_cast<int>(sender->actual_key_size / 3), sender->key.end());
 
 	vector< vector<bool>> matrix(sender->actual_key_size / 3,vector<bool>(sender->actual_key_size / 3));
 	for (int col = 0; col < sender->actual_key_size / 3; col++) {
@@ -200,17 +200,23 @@ void quantum_channel::privacy_amp(protocol * sender, protocol * receiver, int tr
 	}
 
 	for (int row = 1; row < sender->actual_key_size / 3;row++) {
-		matrix[row].push_back(temp[sender->actual_key_size/ 3-1+row]);
+		for (int i = 1; i <= row; i++) {
+			matrix[row].pop_back();
+			matrix[row].insert(matrix[row].begin(),temp[sender->actual_key_size / 3 - 1 + i]);
+		}
+
 	}
 	vector<bool> raw_sen(sender->actual_key_size / 3);
 	vector<bool> raw_rec(sender->actual_key_size / 3);
+	vector<bool> sen_key(sender->key.begin(), sender->key.begin() + (sender->actual_key_size / 3));
+	vector<bool> rec_key(receiver->key.begin(), receiver->key.begin() + (sender->actual_key_size / 3));
 	for (int i = 0; i < sender->actual_key_size / 3; i++) {
 		raw_sen[i] = 0;
 		raw_rec[i] = 0;
 		for (int j = 0; j < sender->actual_key_size/3; j++)
 		{
-			raw_sen[i] = raw_sen[i] + matrix[i][j] * raw_sen[j];
-			raw_rec[i] = raw_rec[i] + matrix[i][j] * raw_rec[j];
+			raw_sen[i] = (raw_sen[i] + matrix[i][j] * sen_key[j])%2;
+			raw_rec[i] = (raw_rec[i] + matrix[i][j] * rec_key[j])%2;
 		}
 	}
 	receiver->key = raw_rec;
