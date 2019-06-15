@@ -1,6 +1,7 @@
 ﻿#include "protocol.h"
 #include "BB84.h"
 #include "B92.h"
+#include "statistics.h"
 
 using namespace std;
 
@@ -15,6 +16,7 @@ int main()
 	protocol* Bob = new B92(size, angle);
 	//protocol* Eve = new B92(size, angle);
 
+	/*
 
 	Alice->load_key();
 	//Alice->generate_basis();
@@ -61,7 +63,10 @@ int main()
 	cout << "Alice" << endl << *dynamic_cast<B92*>(Alice);
 	cout << "Bob" << endl << *dynamic_cast<B92*>(Bob);
 	
-	
+	*/
+
+	statistics STATS(Alice, Bob, 50);
+	STATS.print_stats();
 
 	delete Alice;
 	delete Bob;

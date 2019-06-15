@@ -40,8 +40,7 @@ long long buffer::rand_int(int bits_number)
 		number += buffer::randomize()*pow(2, i);
 	}
 
-	number = number;
-	return number;
+	return static_cast<long long>(number);
 }
 
 void buffer::close()
