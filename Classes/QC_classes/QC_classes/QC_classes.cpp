@@ -10,11 +10,11 @@ int main()
 	buffer::init();
 
 	
-	int size = 450;
+	int size = 1000;
 	double angle = 30;
 	protocol* Alice = new B92(size, angle);
 	protocol* Bob = new B92(size, angle);
-	//protocol* Eve = new B92(size, angle);
+	protocol* Eve = new B92(size, angle);
 
 	/*
 
@@ -65,12 +65,12 @@ int main()
 	
 	*/
 
-	statistics STATS(Alice, Bob, 50);
+	statistics STATS(Alice, Bob, Eve, 0);
 	STATS.print_stats();
 
 	delete Alice;
 	delete Bob;
-	//delete Eve;
+	delete Eve;
 
 	buffer::close();
 
