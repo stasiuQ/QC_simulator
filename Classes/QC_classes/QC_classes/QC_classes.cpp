@@ -10,7 +10,7 @@ int main()
 	buffer::init();
 
 	
-	int size = 1000;
+	int size = 450;
 	double angle = 30;
 	protocol* Alice = new B92(size, angle);
 	protocol* Bob = new B92(size, angle);
@@ -65,7 +65,7 @@ int main()
 	
 	*/
 
-	statistics STATS(Alice, Bob, Eve, 0);
+	statistics STATS(Alice, Bob, 30);
 	STATS.print_stats();
 
 	delete Alice;

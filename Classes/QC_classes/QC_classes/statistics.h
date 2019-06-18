@@ -32,6 +32,9 @@ public:
 	void execute_communication(protocol* Alice, protocol* Bob, protocol* Eve, double noise_level);
 	void simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_noise, double max_noise, double step_noise);
 	void simulate_QBER_angle(protocol* Alice, protocol* Bob, double min_angle, double max_angle, double step_angle, double noise_level);
+	void simulate_QBER_noise(protocol* Alice, protocol* Bob, protocol* Eve, double min_noise, double max_noise, double step_noise);
+	void simulate_QBER_angle(protocol* Alice, protocol* Bob, protocol* Eve, double min_angle, double max_angle, double step_angle, double noise_level);
 	void print_stats();
+	void print_charts();
 
 };

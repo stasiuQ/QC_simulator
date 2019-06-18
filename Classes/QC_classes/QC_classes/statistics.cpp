@@ -51,7 +51,7 @@ void statistics::execute_communication(protocol * Alice, protocol * Bob, double 
 	this->QBER_est = connection.QBER_est;
 	long long perm = buffer::rand_int(5);
 	connection.Cascade(Alice, Bob, 0.5, 5);
-	connection.privacy_amp(Alice, Bob, 20);
+	connection.privacy_amp(Alice, Bob, 20);   // problem with parameters !!!!
 
 	this->key_lenght_correction = Alice->actual_key_size;
 	this->QBER_S_correction = QBER(Alice, Bob);
@@ -92,7 +92,7 @@ void statistics::execute_communication(protocol * Alice, protocol * Bob, protoco
 	this->QBER_est = connection.QBER_est;
 	long long perm = buffer::rand_int(5);
 	connection.Cascade(Alice, Bob, 0.5, 5);
-	connection.privacy_amp(Alice, Bob, 20);
+	connection.privacy_amp(Alice, Bob, 20);  // problem with parameters!
 
 	this->key_lenght_correction = Alice->actual_key_size;
 	this->QBER_S_correction = QBER(Alice, Bob);
@@ -239,6 +239,14 @@ void statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, double mi
 	this->QBER_correction_vs_angle = QBER_correction;
 }
 
+void statistics::simulate_QBER_noise(protocol * Alice, protocol * Bob, protocol * Eve, double min_noise, double max_noise, double step_noise)
+{
+}
+
+void statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, protocol * Eve, double min_angle, double max_angle, double step_angle, double noise_level)
+{
+}
+
 void statistics::print_stats()
 {
 	cout << "Initial key size:" << this->initial_key_size << endl;
@@ -248,4 +256,8 @@ void statistics::print_stats()
 	cout << "QBER - estimation:" << this->QBER_est << endl;
 	cout << "QBER - after correction:" << this->QBER_S_correction << endl;
 
+}
+
+void statistics::print_charts()
+{
 }
