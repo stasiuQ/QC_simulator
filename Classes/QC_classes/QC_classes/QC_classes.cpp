@@ -14,7 +14,7 @@ int main()
 	double angle = 30;
 	protocol* Alice = new B92(size, angle);
 	protocol* Bob = new B92(size, angle);
-	protocol* Eve = new B92(size, angle);
+	//protocol* Eve = new B92(size, angle);
 
 	/*
 
@@ -66,13 +66,19 @@ int main()
 	*/
 
 	statistics STATS(Alice, Bob, 30);
+	STATS.simulate_QBER_noise(Alice, Bob, 0, 60, 5);
+	cout << *dynamic_cast<B92*>(Alice);
+	cout << *dynamic_cast<B92*>(Bob);
+	STATS.simulate_QBER_angle(Alice, Bob, 5, 45, 5, 40);
 	STATS.print_stats();
+	STATS.print_charts("data_noise.txt", "data_angle.txt");
 
 	delete Alice;
 	delete Bob;
-	delete Eve;
+	//delete Eve;
 
 	buffer::close();
 
+	system("PAUSE");
 	return 0;
 }
