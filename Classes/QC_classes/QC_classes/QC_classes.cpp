@@ -66,10 +66,12 @@ int main()
 	*/
 
 	statistics STATS(Alice, Bob, 30);
-	STATS.simulate_QBER_noise(Alice, Bob, 0, 60, 5);
+	SimulationData data = STATS.simulate_QBER_noise(Alice, Bob, 0, 60, 5);
+	data.apply(&Alice, &Bob);
+
 	cout << *dynamic_cast<B92*>(Alice);
 	cout << *dynamic_cast<B92*>(Bob);
-	STATS.simulate_QBER_angle(Alice, Bob, 5, 45, 5, 40);
+	STATS.simulate_QBER_angle(Alice, Bob, 5, 45, 5, 40).apply(&Alice, &Bob);
 	STATS.print_stats();
 	STATS.print_charts("data_noise.txt", "data_angle.txt");
 

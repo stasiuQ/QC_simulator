@@ -5,6 +5,26 @@
 
 using namespace std;
 
+struct SimulationData {   // struct created in order to keep pointers on Alice, Bob and Eve after calling for STATS simulation methods
+	protocol* Alice = nullptr;
+	protocol* Bob = nullptr;
+	protocol* Eve = nullptr;
+
+	void apply(protocol** AlicePtr, protocol** BobPtr, protocol** EvePtr = nullptr) {
+		assign(AlicePtr, Alice);
+		assign(BobPtr, Bob);
+		assign(EvePtr, Eve);
+	}
+
+private:
+	void assign(protocol** ptr, protocol* value) {
+		if (ptr == nullptr) {
+			return;
+		}
+		*ptr = value;
+	}
+};
+
 class statistics {
 protected:
 	vector< vector<double> > QBER_vs_noise;
@@ -30,10 +50,10 @@ public:
 
 	void execute_communication(protocol* Alice, protocol* Bob, double noise_level);
 	void execute_communication(protocol* Alice, protocol* Bob, protocol* Eve, double noise_level);
-	void simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_noise, double max_noise, double step_noise);
-	void simulate_QBER_angle(protocol* Alice, protocol* Bob, double min_angle, double max_angle, double step_angle, double noise_level);
-	void simulate_QBER_noise(protocol* Alice, protocol* Bob, protocol* Eve, double min_noise, double max_noise, double step_noise);
-	void simulate_QBER_angle(protocol* Alice, protocol* Bob, protocol* Eve, double min_angle, double max_angle, double step_angle, double noise_level);
+	SimulationData simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_noise, double max_noise, double step_noise);
+	SimulationData simulate_QBER_angle(protocol* Alice, protocol* Bob, double min_angle, double max_angle, double step_angle, double noise_level);
+	SimulationData simulate_QBER_noise(protocol* Alice, protocol* Bob, protocol* Eve, double min_noise, double max_noise, double step_noise);
+	SimulationData simulate_QBER_angle(protocol* Alice, protocol* Bob, protocol* Eve, double min_angle, double max_angle, double step_angle, double noise_level);
 	void print_stats();
 	void print_charts(string file_1, string file_2);
 

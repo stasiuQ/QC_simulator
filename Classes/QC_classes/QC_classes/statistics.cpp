@@ -96,7 +96,7 @@ void statistics::execute_communication(protocol * Alice, protocol * Bob, protoco
 	this->QBER_S_correction = QBER(Alice, Bob);
 }
 
-void statistics::simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_noise, double max_noise, double step_noise)
+SimulationData statistics::simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_noise, double max_noise, double step_noise)
 {
 	double noise_level = min_noise;
 	int no_steps = static_cast<int>((max_noise - min_noise) / step_noise);
@@ -169,9 +169,11 @@ void statistics::simulate_QBER_noise(protocol* Alice, protocol* Bob, double min_
 	this->QBER_vs_noise = QBER_noise;
 	this->QBER_estimation_vs_noise = QBER_estimation;
 	this->QBER_correction_vs_noise = QBER_correction;
+
+	return { Alice, Bob };
 }
 
-void statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, double min_angle, double max_angle, double step_angle, double noise_level)
+SimulationData statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, double min_angle, double max_angle, double step_angle, double noise_level)
 {
 	double angle = min_angle;
 	int no_steps = static_cast<int>((max_angle - min_angle) / step_angle);
@@ -235,9 +237,11 @@ void statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, double mi
 	this->QBER_vs_angle = QBER_noise;
 	this->QBER_estimation_vs_angle = QBER_estimation;
 	this->QBER_correction_vs_angle = QBER_correction;
+
+	return { Alice, Bob };
 }
 
-void statistics::simulate_QBER_noise(protocol * Alice, protocol * Bob, protocol * Eve, double min_noise, double max_noise, double step_noise)
+SimulationData statistics::simulate_QBER_noise(protocol * Alice, protocol * Bob, protocol * Eve, double min_noise, double max_noise, double step_noise)
 {
 	double noise_level = min_noise;
 	int no_steps = static_cast<int>((max_noise - min_noise) / step_noise);
@@ -257,14 +261,17 @@ void statistics::simulate_QBER_noise(protocol * Alice, protocol * Bob, protocol 
 	for (int i = 0; i < no_steps; i++) {
 		delete Alice;
 		delete Bob;
+		delete Eve;
 
 		if (is_B92) {
 			Alice = new B92(size, angle);
 			Bob = new B92(size, angle);
+			Eve = new B92(size, angle);
 		}
 		else {
 			Alice = new BB84(size);
 			Bob = new BB84(size);
+			Eve = new BB84(size);
 		}
 		Alice->load_key();
 		if (Alice->is_BB84)
@@ -317,9 +324,10 @@ void statistics::simulate_QBER_noise(protocol * Alice, protocol * Bob, protocol 
 	this->QBER_estimation_vs_noise = QBER_estimation;
 	this->QBER_correction_vs_noise = QBER_correction;
 
+	return { Alice, Bob, Eve };
 }
 
-void statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, protocol * Eve, double min_angle, double max_angle, double step_angle, double noise_level)
+SimulationData statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, protocol * Eve, double min_angle, double max_angle, double step_angle, double noise_level)
 {
 	double angle = min_angle;
 	int no_steps = static_cast<int>((max_angle - min_angle) / step_angle);
@@ -338,9 +346,11 @@ void statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, protocol 
 	for (int i = 0; i < no_steps; i++) {
 		delete Alice;
 		delete Bob;
+		delete Eve;
 
 		Alice = new B92(size, angle);
 		Bob = new B92(size, angle);
+		Eve = new B92(size, angle);
 
 		//****Communication*****//
 		Alice->load_key();
@@ -388,6 +398,8 @@ void statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, protocol 
 	this->QBER_vs_angle = QBER_noise;
 	this->QBER_estimation_vs_angle = QBER_estimation;
 	this->QBER_correction_vs_angle = QBER_correction;
+
+	return { Alice, Bob, Eve };
 }
 
 void statistics::print_stats()
