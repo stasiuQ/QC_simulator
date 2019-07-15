@@ -66,7 +66,7 @@ int main()
 	*/
 
 	statistics STATS(Alice, Bob, 30);
-	SimulationData data = STATS.simulate_QBER_noise(Alice, Bob, 0, 60, 5);
+	SimulationData data = STATS.simulate_QBER_noise(Alice, Bob, 0, 60, 2);
 	data.apply(&Alice, &Bob);
 
 	cout << *dynamic_cast<B92*>(Alice);

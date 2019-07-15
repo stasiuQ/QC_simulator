@@ -171,7 +171,7 @@ SimulationData statistics::simulate_QBER_noise(protocol* Alice, protocol* Bob, d
 	this->QBER_correction_vs_noise = QBER_correction;
 
 	return { Alice, Bob };
-}
+} 
 
 SimulationData statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob, double min_angle, double max_angle, double step_angle, double noise_level)
 {
@@ -400,6 +400,53 @@ SimulationData statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob,
 	this->QBER_correction_vs_angle = QBER_correction;
 
 	return { Alice, Bob, Eve };
+}
+
+SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob, double noise_level, int no_steps, int C_steps)
+{
+	double alpha = 0.2;
+	int size = Alice->key_size;
+	bool is_B92 = Alice->is_B92;
+	double angle = 0;
+	if (is_B92) {
+		angle = dynamic_cast<B92*>(Alice)->alpha;
+	}
+	vector< vector<double> > QBER_vs_alpha;
+
+	//****Communication*****//
+	Alice->load_key();
+	if (!is_B92)
+		Alice->generate_basis();
+
+	Bob->load_key();
+	Bob->generate_basis();
+
+	quantum_channel connection(Alice);
+	connection.make_noise(noise_level);
+
+	Bob->read_quantum(&connection);
+	Alice->compare(Bob);
+
+	Alice->key_reduction();
+	Bob->key_reduction();
+
+	//**** End of communication ****//
+	for (int i = 0; i < no_steps; i++) {
+		quantum_channel temp_channel(connection);    // creating temporal operative objects, we want to work on the same keys each time
+		protocol* temp_Alice;
+		protocol* temp_Bob;
+		if (is_B92) {
+			temp_Alice = new B92(*dynamic_cast<B92*>(Alice));
+			temp_Bob = new B92(*dynamic_cast<B92*>(Bob));
+		}
+		else {
+			temp_Alice = new BB84(*dynamic_cast<BB84*>(Alice));
+			temp_Bob = new BB84(*dynamic_cast<BB84*>(Bob));
+		}
+
+		temp_channel.error_estimation(Alice, Bob, 50);
+	}
+
 }
 
 void statistics::print_stats()

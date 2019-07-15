@@ -19,6 +19,14 @@ quantum_channel::quantum_channel(protocol * person)
 	}
 }
 
+quantum_channel::quantum_channel(const quantum_channel & channel)
+{
+	this->key_size = channel.key_size;
+	this->state_key = channel.state_key;
+	this->state_base = channel.state_base;
+	this->QBER_est = channel.QBER_est;
+}
+
 quantum_channel::~quantum_channel()
 {
 }
@@ -231,4 +239,14 @@ void quantum_channel::privacy_amp(protocol * sender, protocol * receiver, int tr
 	receiver->actual_key_size = raw_rec.size();
 	sender->key = raw_sen;
 	sender->actual_key_size = raw_sen.size();
+}
+
+quantum_channel & quantum_channel::operator=(const quantum_channel & channel)
+{
+	this->key_size = channel.key_size;
+	this->state_key = channel.state_key;
+	this->state_base = channel.state_base;
+	this->QBER_est = channel.QBER_est;
+
+	return *this;
 }

@@ -54,6 +54,7 @@ public:
 	SimulationData simulate_QBER_angle(protocol* Alice, protocol* Bob, double min_angle, double max_angle, double step_angle, double noise_level);
 	SimulationData simulate_QBER_noise(protocol* Alice, protocol* Bob, protocol* Eve, double min_noise, double max_noise, double step_noise);
 	SimulationData simulate_QBER_angle(protocol* Alice, protocol* Bob, protocol* Eve, double min_angle, double max_angle, double step_angle, double noise_level);
+	SimulationData Cascade_convergence(protocol* Alice, protocol* Bob, double noise_level, int no_steps, int C_steps);
 	void print_stats();
 	void print_charts(string file_1, string file_2);
 
