@@ -14,6 +14,7 @@ public:
 	//bool* crossed
 	
 	BB84(int k_size = 20);
+	BB84(const BB84& object);  // copying constructor
 	~BB84();
 	bool get_key(int iterator);
 	bool get_basis(int iterator);

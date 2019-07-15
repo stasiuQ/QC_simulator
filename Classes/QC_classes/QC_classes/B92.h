@@ -11,6 +11,7 @@ protected:
 public:
 
 	B92(int k_size = 20, double angle = 45);
+	B92(const B92& object);
 	~B92();
 	bool get_key(int iterator);
 	bool get_basis(int iterator);

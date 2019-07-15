@@ -12,6 +12,18 @@ BB84::BB84(int k_size) {
 	this->crossed = vector<bool>(k_size);
 }
 
+BB84::BB84(const BB84 & object)
+{
+	this->is_BB84 = true;
+	this->is_B92 = false;
+	this->key_size = object.key_size;
+	this->temp_key = object.temp_key;
+	this->key = object.key;
+	this->base = object.base;
+	this->actual_key_size = object.actual_key_size;
+	this->crossed = object.crossed;
+}
+
 BB84::~BB84 (){
 }
 

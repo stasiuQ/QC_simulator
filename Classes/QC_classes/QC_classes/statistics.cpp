@@ -402,7 +402,7 @@ SimulationData statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob,
 	return { Alice, Bob, Eve };
 }
 
-SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob, double noise_level, int no_steps, int C_steps)
+SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob, double noise_level, int no_steps, double alpha_step, int C_steps)
 {
 	double alpha = 0.2;
 	int size = Alice->key_size;
@@ -411,7 +411,7 @@ SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob,
 	if (is_B92) {
 		angle = dynamic_cast<B92*>(Alice)->alpha;
 	}
-	vector< vector<double> > QBER_vs_alpha;
+	vector< vector<double> > QBER_alpha;
 
 	//****Communication*****//
 	Alice->load_key();
@@ -444,7 +444,18 @@ SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob,
 			temp_Bob = new BB84(*dynamic_cast<BB84*>(Bob));
 		}
 
-		temp_channel.error_estimation(Alice, Bob, 50);
+		temp_channel.error_estimation(temp_Alice, temp_Bob, 50);
+		temp_channel.Cascade(temp_Alice, temp_Bob, alpha, C_steps);
+
+		vector<double> temp_vector;  // filling QBER for particular alpha
+		temp_vector.push_back(alpha);
+		temp_vector.push_back(this->QBER(temp_Alice, temp_Bob));
+		QBER_alpha.push_back(temp_vector);
+
+		delete temp_Alice;
+		delete temp_Bob;
+
+		alpha += alpha_step;
 	}
 
 }

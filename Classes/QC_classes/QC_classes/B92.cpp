@@ -16,6 +16,23 @@ B92::B92(int k_size, double angle)  // "angle" argument given in degrees
 	this->gamma = sqrt(1 - pow(abs(this->delta), 2));
 }
 
+B92::B92(const B92 & object)
+{
+	this->is_BB84 = false;
+	this->is_B92 = true;
+	this->key_size = object.key_size;
+	this->temp_key = object.temp_key;
+	this->key = object.key;
+	this->base = object.base;
+	this->actual_key_size = object.actual_key_size;
+	this->crossed = object.crossed;
+
+	this->alpha = object.alpha;
+	this->beta = object.beta;
+	this->delta = object.delta;
+	this->gamma = object.gamma;
+}
+
 B92::~B92()
 {
 
