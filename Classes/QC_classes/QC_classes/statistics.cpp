@@ -402,9 +402,10 @@ SimulationData statistics::simulate_QBER_angle(protocol * Alice, protocol * Bob,
 	return { Alice, Bob, Eve };
 }
 
-SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob, double noise_level, int no_steps, double alpha_step, int C_steps)
+SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob, double noise_level, double init_alpha, double end_alpha, double alpha_step,float error_est_comparison_percent, int C_steps)
 {
-	double alpha = 0.2;
+	double alpha = init_alpha;
+	int no_steps = static_cast<int>((end_alpha - init_alpha) / alpha_step);
 	int size = Alice->key_size;
 	bool is_B92 = Alice->is_B92;
 	double angle = 0;
@@ -412,6 +413,18 @@ SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob,
 		angle = dynamic_cast<B92*>(Alice)->alpha;
 	}
 	vector< vector<double> > QBER_alpha;
+
+	delete Alice;
+	delete Bob;
+
+	if (is_B92) {
+		Alice = new B92(size, angle);
+		Bob = new B92(size, angle);
+	}
+	else {
+		Alice = new BB84(size);
+		Bob = new BB84(size);
+	}
 
 	//****Communication*****//
 	Alice->load_key();
@@ -444,7 +457,7 @@ SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob,
 			temp_Bob = new BB84(*dynamic_cast<BB84*>(Bob));
 		}
 
-		temp_channel.error_estimation(temp_Alice, temp_Bob, 50);
+		temp_channel.error_estimation(temp_Alice, temp_Bob, error_est_comparison_percent);
 		temp_channel.Cascade(temp_Alice, temp_Bob, alpha, C_steps);
 
 		vector<double> temp_vector;  // filling QBER for particular alpha
@@ -457,7 +470,8 @@ SimulationData statistics::Cascade_convergence(protocol * Alice, protocol * Bob,
 
 		alpha += alpha_step;
 	}
-
+	this->QBER_vs_alpha = QBER_alpha;
+	return { Alice, Bob };
 }
 
 void statistics::print_stats()
@@ -488,4 +502,17 @@ void statistics::print_charts(string file_1, string file_2)
 
 	data_noise.close();
 	data_angle.close();
+}
+
+void statistics::print_cascade_conv(string file_3)
+{
+	fstream data_C_conv;
+	data_C_conv.open(file_3, ios::out);
+
+	for (int i = 0; i < this->QBER_vs_alpha.size(); i++) {
+		data_C_conv << QBER_vs_alpha[i][0] << "		" << QBER_vs_alpha[i][1] << endl;
+	}
+
+	data_C_conv.close();
+
 }

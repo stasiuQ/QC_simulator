@@ -16,6 +16,9 @@ int main()
 	protocol* Bob = new B92(size, angle);
 	//protocol* Eve = new B92(size, angle);
 
+
+	//*** First communication pattern ***//
+
 	/*
 
 	Alice->load_key();
@@ -65,15 +68,21 @@ int main()
 	
 	*/
 
+	//*** End of the pattern ***//
+
 	statistics STATS(Alice, Bob, 30);
-	SimulationData data = STATS.simulate_QBER_noise(Alice, Bob, 0, 60, 2);
-	data.apply(&Alice, &Bob);
+	//SimulationData data = STATS.simulate_QBER_noise(Alice, Bob, 0, 60, 2);
+	//data.apply(&Alice, &Bob);
 
 	cout << *dynamic_cast<B92*>(Alice);
 	cout << *dynamic_cast<B92*>(Bob);
-	STATS.simulate_QBER_angle(Alice, Bob, 5, 45, 5, 40).apply(&Alice, &Bob);
+	
+	STATS.Cascade_convergence(Alice, Bob, 30, 0.2, 1, 0.05, 50, 20).apply(&Alice, &Bob);
+	STATS.print_cascade_conv("data_C_convergence.txt");
+	
+	//STATS.simulate_QBER_angle(Alice, Bob, 5, 45, 5, 40).apply(&Alice, &Bob);
 	STATS.print_stats();
-	STATS.print_charts("data_noise.txt", "data_angle.txt");
+	//STATS.print_charts("data_noise.txt", "data_angle.txt");
 
 	delete Alice;
 	delete Bob;
